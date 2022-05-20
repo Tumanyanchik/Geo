@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+
+
+<head>
+    <meta charset="UTF-8">
+<!--    <script language="JavaScript">
+        if (document.referrer !== 'http://localhost:8080/user/login') {
+            window.location = "http://localhost:8080/user/login";
+        }
+    </script>-->
+
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=21617701-025d-4832-9e0b-ca48ac51d1ce&lang=ru_RU"
+            type="text/javascript">
+    </script>
+
+    <script type="text/javascript">
+        ymaps.ready(init);
+        var placemarks = [
+                {
+                    latitude: 55.68,
+                    logitude: 37.73,
+                    balloonContent: 'Здесь буду координаты и кнопка загрузки'
+                },
+                {
+                    latitude: 55.64,
+                    logitude: 37.71,
+                    balloonContent: 'Здесь буду координаты и кнопка загрузки'
+                },
+                {
+                    latitude: 55.64,
+                    logitude: 37.60,
+                    balloonContent: 'Здесь буду координаты и кнопка загрузки'
+                }
+            ],
+            geoObjects = [];
+
+        function init() {
+            var myMap = new ymaps.Map("map", {
+                center: [55.76, 37.64],
+                zoom: 10
+            });
+
+            for (var i = 0; i < placemarks.length; i++) {
+                geoObjects[i] = new ymaps.Placemark([placemarks[i].latitude, placemarks[i].logitude], {
+                    balloonContent: 'Здесь буду координаты и кнопка загрузки'
+                }, {
+                    // Опции.
+                    // Необходимо указать данный тип макета.
+                    iconLayout: 'default#imageWithContent',
+                    // Своё изображение иконки метки.
+                    iconImageHref: 'https://github.com/Leaflet/Leaflet/raw/main/docs/examples/custom-icons/leaf-green.png',
+                    // Размеры метки.
+                    iconImageSize: [28, 48],
+                    // Смещение левого верхнего угла иконки относительно
+                    // её "ножки" (точки привязки).
+                    iconImageOffset: [-28, -48],
+                    // Смещение слоя с содержимым относительно слоя с картинкой.
+                    iconContentOffset: [15, 15],
+                });
+            }
+            var clusterer = new ymaps.Clusterer({});
+            myMap.geoObjects.add(clusterer);
+            clusterer.add(geoObjects);
+        }
+
+    </script>
+
+
+
+</head>
+
+<body>
+<h1>Карта</h1>
+    <div id="map" style="width: 1100px; height: 800px;"></div>
+    <div id="tableDiv">
+    <table id = "table" >
+        <caption>Ожидают проверки</caption>
+        <tr>
+            <th>№</th>
+            <th>Файл</th>
+            <th>Сотрудник</th>
+            <th>Действие</th>
+        </tr>
+
+        <tr th:each="file, state : ${processingList}">
+            <td th:utext="${state.count}">№</td>
+            <td >
+                <a th:href="${file.getfLink()}">Загрузить</a>
+            </td>
+            <td th:utext="${file.getEmployeeName()}">Сотрудник</td>
+            <td>
+                <form th:method="post" th:action="@{/user/acceptFile}" th:object="${file}" >
+                    <input id="id_file" type="hidden"  name = "id_file" th:value="*{id_file}"/>
+                    <input id="status" type="hidden"  name = "status" th:value="Принят"/>
+                <div >
+                    <input id="accept" type="submit" value="Принять"/>
+                </div>
+
+                </form>
+                <form th:method="post" th:action="@{/user/acceptFile}" th:object="${file}" >
+                    <input id="id_file_r" type="hidden"  name = "id_file" th:value="*{id_file}"/>
+                    <input id="status_r" type="hidden"  name = "status" th:value="|Не принят|"/>
+                <div >
+                    <input id = "reject" type="submit" value="Отклонить"/>
+                </div>
+                </form>
+            </td>
+        </tr>
+        </table>
+    </div>
+</body>
+
+
+<style type="text/css">
+    body{
+        background: #DCDDDF url(https://cssdeck.com/uploads/media/items/7/7AF2Qzt.png);
+    }
+
+    #map {
+        float: left;
+        display: block;
+        margin-top: 20px;
+        margin-left: 40px;
+        border-radius: 30px;
+        border: 1px solid #D69E31;
+    }
+    #tableDiv{
+        float: right;
+        display: block;
+        margin-top: 20px;
+        margin-right: 40px;
+    }
+    #table{
+        width: 700px;
+        border-collapse: collapse;
+        border: 2px solid #c4c6ca;
+        font: 13px Helvetica, Arial, sans-serif;
+        background: #eae7e7;
+    }
+    th, td {
+        padding: 10px 15px;
+        border: 1px solid #c4c6ca;
+        text-align: center;
+        align-content: center;
+        font:bold 13px Helvetica, Arial, sans-serif;
+        color: #7E7E7E;
+    }
+    th{
+        color: #7E7E7E;
+    }
+
+    caption {
+        caption-side: top;
+        text-align: center;
+        padding: 10px 10px;
+        color: #7E7E7E;
+        font: bold 16px Helvetica, Arial, sans-serif;
+    }
+    #accept{
+        display: inline;
+        background: rgb(254,231,154);
+        background: -moz-linear-gradient(top,  rgba(254,231,154,1) 0%, rgba(254,193,81,1) 100%);
+        background: -webkit-linear-gradient(top,  rgba(254,231,154,1) 0%,rgba(254,193,81,1) 100%);
+        background: -o-linear-gradient(top,  rgba(254,231,154,1) 0%,rgba(254,193,81,1) 100%);
+        background: -ms-linear-gradient(top,  rgba(254,231,154,1) 0%,rgba(254,193,81,1) 100%);
+        background: linear-gradient(top,  rgba(254,231,154,1) 0%,rgba(254,193,81,1) 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fee79a', endColorstr='#fec151',GradientType=0 );
+        -webkit-border-radius: 30px;
+        -moz-border-radius: 30px;
+        -ms-border-radius: 30px;
+        -o-border-radius: 30px;
+        border-radius: 30px;
+        -webkit-box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
+        -moz-box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
+        -ms-box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
+        -o-box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
+        box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
+        border: 1px solid #D69E31;
+        color: #85592e;
+        cursor: pointer;
+        float: none;
+        font: bold 15px Helvetica, Arial, sans-serif;
+        height: 35px;
+        margin: 10px 0 15px 15px;
+        position: relative;
+        text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+        width: 120px;
+    }
+    #accept:hover {
+        background: rgb(254,193,81);
+        background: -moz-linear-gradient(top,  rgba(254,193,81,1) 0%, rgba(254,231,154,1) 100%);
+        background: -webkit-linear-gradient(top,  rgba(254,193,81,1) 0%,rgba(254,231,154,1) 100%);
+        background: -o-linear-gradient(top,  rgba(254,193,81,1) 0%,rgba(254,231,154,1) 100%);
+        background: -ms-linear-gradient(top,  rgba(254,193,81,1) 0%,rgba(254,231,154,1) 100%);
+        background: linear-gradient(top,  rgba(254,193,81,1) 0%,rgba(254,231,154,1) 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fec151', endColorstr='#fee79a',GradientType=0 );
+    }
+
+    #reject{
+        display: inline;
+        background: rgb(254,231,154);
+        background: -moz-linear-gradient(top,  rgba(254,231,154,1) 0%, rgba(254,193,81,1) 100%);
+        background: -webkit-linear-gradient(top,  rgba(254,231,154,1) 0%,rgba(254,193,81,1) 100%);
+        background: -o-linear-gradient(top,  rgba(254,231,154,1) 0%,rgba(254,193,81,1) 100%);
+        background: -ms-linear-gradient(top,  rgba(254,231,154,1) 0%,rgba(254,193,81,1) 100%);
+        background: linear-gradient(top,  rgba(254,231,154,1) 0%,rgba(254,193,81,1) 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fee79a', endColorstr='#fec151',GradientType=0 );
+        -webkit-border-radius: 30px;
+        -moz-border-radius: 30px;
+        -ms-border-radius: 30px;
+        -o-border-radius: 30px;
+        border-radius: 30px;
+        -webkit-box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
+        -moz-box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
+        -ms-box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
+        -o-box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
+        box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
+        border: 1px solid #D69E31;
+        color: #85592e;
+        cursor: pointer;
+        float: none;
+        font: bold 15px Helvetica, Arial, sans-serif;
+        height: 35px;
+        margin: 10px 0 15px 15px;
+        position: relative;
+        text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+        width: 120px;
+    }
+
+    #reject:hover{
+        background: rgb(254,193,81);
+        background: -moz-linear-gradient(top,  rgba(254,193,81,1) 0%, rgba(254,231,154,1) 100%);
+        background: -webkit-linear-gradient(top,  rgba(254,193,81,1) 0%,rgba(254,231,154,1) 100%);
+        background: -o-linear-gradient(top,  rgba(254,193,81,1) 0%,rgba(254,231,154,1) 100%);
+        background: -ms-linear-gradient(top,  rgba(254,193,81,1) 0%,rgba(254,231,154,1) 100%);
+        background: linear-gradient(top,  rgba(254,193,81,1) 0%,rgba(254,231,154,1) 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fec151', endColorstr='#fee79a',GradientType=0 );
+    }
+
+
+</style>
