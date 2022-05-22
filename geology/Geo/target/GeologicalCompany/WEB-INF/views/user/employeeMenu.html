@@ -3,92 +3,95 @@
 
 <head>
     <meta charset="UTF-8">
-<!--    <script language="JavaScript">
-        if (document.referrer !== 'http://localhost:8080/user/login') {
-            window.location = "http://localhost:8080/user/login";
-        }
-    </script>-->
+    <!--    <script language="JavaScript">
+            if (document.referrer !== 'http://localhost:8080/user/login') {
+                window.location = "http://localhost:8080/user/login";
+            }
+        </script>-->
 </head>
 
 
 <body>
-<div id="menuPanel" >
-<!--    <h1>Отчеты</h1>-->
+<div id="menuPanel">
+    <a id ="switch" href="http://localhost:8080/user/login">Выход</a>
 </div>
 
 
 <div id="tableDiv">
-<table id = "table" >
-    <caption>Отчеты</caption>
-    <tr>
-        <th>№</th>
-        <th>Файл</th>
-        <th>Сотрудник</th>
-        <th>Статус</th>
-    </tr>
+    <table id="table">
+        <caption>Отчеты</caption>
+        <tr>
+            <th>№</th>
+            <th>Файл</th>
+            <th>Сотрудник</th>
+            <th>Статус</th>
+        </tr>
 
-    <tr th:each="file, state : ${processingList}">
-        <td th:utext="${state.count}">№</td>
-        <td >
-            <a th:href="${file.getfLink()}">Загрузить</a>
-        </td>
-        <td th:utext="${file.getEmployeeName()}">Сотрудник</td>
-        <td th:utext="${file.getStatus()}">Статус</td>
-    </tr>
-</table>
+        <tr th:each="file, state : ${processingList}">
+            <td th:utext="${state.count}">№</td>
+            <td>
+                <a th:href="${file.getfLink()}">Загрузить</a>
+            </td>
+            <td th:utext="${file.getEmployeeName()}">Сотрудник</td>
+            <td th:utext="${file.getStatus()}">Статус</td>
+        </tr>
+    </table>
 </div>
 
-<form th:method="post" th:action="@{/user/uploadFile}" th:object="${file}" >
+<form th:method="post" th:action="@{/user/uploadFile}" th:object="${file}">
     <h1>Добавить отчет</h1>
     <div>
         <label id="labEmployee">Сотрудник:</label>
-        <input type="text"  th:value="*{employeeName}" id="employeeName"  />
+        <input type="text" th:value="*{employeeName}" id="employeeName"/>
     </div>
 
     <div>
         <label id="labIdRep">№ дела:</label>
-        <span style="color: red"  th:text="${messageErrorAvailabilityFile}">Error message availabilityFile</span>
-        <input  type="text"    id="id_contract" required="" th:field="*{id_contract}" />
-        <div style="color: red" th:if="${#fields.hasErrors('id_contract')}" th:errors="*{id_contract}">Contract error</div>
+        <span style="color: red" th:text="${messageErrorAvailabilityFile}">Error message availabilityFile</span>
+        <input type="text" id="id_contract" required="" th:field="*{id_contract}"/>
+        <div style="color: red" th:if="${#fields.hasErrors('id_contract')}" th:errors="*{id_contract}">Contract error
+        </div>
     </div>
 
     <div>
         <label id="labCustomer">Заказчик:</label>
-        <input  type="text"    id="customerName"   th:field="*{customerName}"/>
-        <div style="color: red" th:if="${#fields.hasErrors('customerName')}" th:errors="*{customerName}">Customer error</div>
+        <input type="text" id="customerName" th:field="*{customerName}"/>
+        <div style="color: red" th:if="${#fields.hasErrors('customerName')}" th:errors="*{customerName}">Customer
+            error
+        </div>
     </div>
 
     <div>
         <label id="labTitleWork">Тип работы:</label>
-        <input  type="text"    id="titleWork"  th:field="*{titleWork}" />
+        <input type="text" id="titleWork" th:field="*{titleWork}"/>
         <div style="color: red" th:if="${#fields.hasErrors('titleWork')}" th:errors="*{titleWork}">TitleWork error</div>
     </div>
 
     <div>
         <label id="labYear">Год:</label>
-        <input  type="text"    id="year"   th:field="*{year}" />
+        <input type="text" id="year" th:field="*{year}"/>
         <div style="color: red" th:if="${#fields.hasErrors('year')}" th:errors="*{year}">Year error</div>
     </div>
 
-<!--    <div>
-        <label id="labDistrict">Улица:</label>
-        <input  type="text"    id="district"/>
-    </div>-->
+    <!--    <div>
+            <label id="labDistrict">Улица:</label>
+            <input  type="text"    id="district"/>
+        </div>-->
 
     <div>
         <label id="labLongitude">Долгота:</label>
-        <input  type="text"    id="longitude" required="" th:field="*{longitude}"/>
+        <input type="text" id="longitude" required="" th:field="*{longitude}"/>
         <div style="color: red" th:if="${#fields.hasErrors('longitude')}" th:errors="*{longitude}">Longitude error</div>
     </div>
 
     <div>
         <label id="labLatitude">Широта:</label>
-        <input  type="text"    id="latitude" required="" th:field="*{latitude}"/>
+        <input type="text" id="latitude" required="" th:field="*{latitude}"/>
         <div style="color: red" th:if="${#fields.hasErrors('latitude')}" th:errors="*{latitude}">Latitude error</div>
     </div>
 
     <div>
-        <input  type="text"  placeholder="Прикрепите файл"  id="file"/>
+        <input type="text" placeholder="Прикрепите файл" id="file"/>
     </div>
 
     <div>
@@ -101,40 +104,43 @@
 
 <style type="text/css">
 
-    body{
+    body {
         background: #DCDDDF url(https://cssdeck.com/uploads/media/items/7/7AF2Qzt.png);
     }
 
-    #menuPanel{
-        border-bottom: 2px solid #c4c6ca; ;
+    #menuPanel {
+        border-bottom: 2px solid #c4c6ca;;
         background: lightslategray;
         border-bottom-left-radius: 30px;
         border-bottom-right-radius: 30px;
         height: 75px;
     }
 
-    #tableDiv{
+    #tableDiv {
         float: left;
         display: block;
         margin-top: 20px;
         margin-left: 40px;
     }
-    #table{
+
+    #table {
         width: 700px;
         border-collapse: collapse;
         border: 2px solid #c4c6ca;
         font: 13px Helvetica, Arial, sans-serif;
     }
+
     th, td {
         padding: 10px 15px;
         border: 1px solid #c4c6ca;
         text-align: center;
         align-content: center;
-        font:bold 13px Helvetica, Arial, sans-serif;
+        font: bold 13px Helvetica, Arial, sans-serif;
         color: #7E7E7E;
         background: #eae7e7;
     }
-    th{
+
+    th {
         color: #7E7E7E;
     }
 
@@ -147,12 +153,12 @@
     }
 
 
-    form  {
+    form {
         float: right;
         display: block;
         margin-top: 20px;
         margin-right: 150px;
-        background: #eae7e7 ;
+        background: #eae7e7;
         box-shadow: 0 1px 0 #fff inset;
         border: 1px solid #c4c6ca;
         padding: 25px 0 0;
@@ -163,16 +169,23 @@
         width: 600px;
     }
 
-/*    h1 {
-        color: #7E7E7E;
+        h1 {
+            color: #7E7E7E;
+            font: bold 25px Helvetica, Arial, sans-serif;
+            letter-spacing: -0.05em;
+            line-height: 20px;
+            margin: 10px 0 30px;
+        }
+    #switch {
+        color: black;
+        float: right;
         font: bold 25px Helvetica, Arial, sans-serif;
         letter-spacing: -0.05em;
         line-height: 20px;
-        margin: 10px 0 30px;
-    }*/
+        margin: 20px 20px 20px 20px;
+    }
 
-
-    input{
+    input {
         border: 1px solid #c8c8c8;
         color: #777;
         font: 13px Helvetica, Arial, sans-serif;
@@ -182,8 +195,9 @@
         transition: all 0.5s ease;
         margin: 10px;
     }
+
     label {
-        display:flex;
+        display: flex;
         color: #7E7E7E;
         font: bold italic 15px Helvetica, Arial, sans-serif;
         letter-spacing: -0.05em;

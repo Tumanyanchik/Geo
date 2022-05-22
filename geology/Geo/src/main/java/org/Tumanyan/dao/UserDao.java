@@ -106,7 +106,7 @@ public class UserDao {
             openConnection();
             Statement statement = connection.createStatement();
             String SQL = "SELECT ID_FILE,f.ID_EMPLOYEE,FIO,FLINK,STATUS FROM FILES f JOIN CONTRACT c "+
-                    "ON f.id_contract=c.id_contract JOIN EMPLOYEE e ON f.id_employee =e.id_employee WHERE STATUS = 'Обрабатывается' OR STATUS = 'Не принят'";
+                    "ON f.id_contract=c.id_contract JOIN EMPLOYEE e ON f.id_employee =e.id_employee WHERE STATUS = 'Обрабатывается'";
             ResultSet resultSet =statement.executeQuery(SQL);
 
             while(resultSet.next()){

@@ -2,6 +2,7 @@ package org.Tumanyan.controllers;
 
 import org.Tumanyan.entity.File;
 import org.Tumanyan.entity.User;
+import org.Tumanyan.services.DiskService;
 import org.Tumanyan.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,7 +13,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.sql.Blob;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,10 +23,13 @@ import java.util.stream.Collectors;
 @RequestMapping("/user")
 public class UsersController {
 
+    private final String TOKEN = "AQAAAAAT3cmsAADLW6DgBVJwJ0e_rnH9sVXL5hM";
     private final UserService userService;
 
+
     @Autowired
-    public UsersController(UserService userService){
+    public UsersController(UserService userService, DiskService diskService){
+        this.diskS
         this.userService =userService;
     }
 
@@ -55,6 +58,7 @@ public class UsersController {
 
     @GetMapping("/employeeMenu")
     public String employeeMenu(Model model){
+        User user = (User) model.getAttribute("user");
         model.addAttribute("processingList", userService.showProcessingFiles());
         model.addAttribute("file",new File());
         return "user/employeeMenu";

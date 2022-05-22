@@ -71,7 +71,10 @@
 </head>
 
 <body>
-<h1>Карта</h1>
+<div id="menuPanel" >
+    <a id ="switch" href="http://localhost:8080/user/login">Выход</a>
+    <a id ="switch2" href="http://localhost:8080/user/registration">Зарегестрировать</a>
+</div>
     <div id="map" style="width: 1100px; height: 800px;"></div>
     <div id="tableDiv">
     <table id = "table" >
@@ -117,11 +120,37 @@
         background: #DCDDDF url(https://cssdeck.com/uploads/media/items/7/7AF2Qzt.png);
     }
 
+    #menuPanel{
+        border-bottom: 2px solid #c4c6ca; ;
+        background: lightslategray;
+        border-bottom-left-radius: 30px;
+        border-bottom-right-radius: 30px;
+        height: 75px;
+    }
+
+    #switch {
+        color: black;
+        float: right;
+        font: bold 25px Helvetica, Arial, sans-serif;
+        letter-spacing: -0.05em;
+        line-height: 20px;
+        margin: 20px 20px 20px 20px;
+    }
+    #switch2 {
+        block:flex;
+        color: black;
+        float: right;
+        font: bold 25px Helvetica, Arial, sans-serif;
+        letter-spacing: -0.05em;
+        line-height: 20px;
+        margin: 20px 20px 20px 20px;
+    }
+
     #map {
         float: left;
         display: block;
         margin-top: 20px;
-        margin-left: 40px;
+        margin-left: 20px;
         border-radius: 30px;
         border: 1px solid #D69E31;
     }
