@@ -18,7 +18,7 @@ public class DiskService {
     private static final Logger logger = LoggerFactory.getLogger(DiskService.class);
     private final RestClient client;
 
-    DiskService(String user, String token){
+    public DiskService(String user, String token){
         logger.info("Начало сеанса работы.");
         Credentials credentials = new Credentials(user, token);
         client = new RestClient(credentials);
@@ -45,26 +45,12 @@ public class DiskService {
 
     boolean getFile(String name) {
         try {
-            ResourcesArgs resourcesArgs = new ResourcesArgs.Builder()
-                    .setMediaType("audio,video,image")
-                    .setLimit(50)
-                    .setOffset(0)
-                    .build();
-            List<Resource> resourceList = client.getFlatResourceList(resourcesArgs).getItems();
-            ResourcePath path = null;
-            for (Resource r : resourceList) {
-                if (r.getName().equals(name)) {
-                    path = r.getPath();
-                    break;
+            File local = new File(pathToDownload);
+            client.downloadFile(pathOnDisk, local, new ProgressListener() {
+                @Override
+                public void updateProgress(long loaded, long total) {
+                    logger.info("updateProgress: " + loaded + " / " + total);
                 }
-            }
-            if (path != null) {
-                File local = new File("src//downloads//" + name);
-                client.downloadFile(path.getPath(), local, new ProgressListener() {
-                    @Override
-                    public void updateProgress(long loaded, long total) {
-                        logger.info("updateProgress: " + loaded + " / " + total);
-                    }
 
                     @Override
                     public boolean hasCancelled() {
@@ -117,7 +103,9 @@ public class DiskService {
         }
     }
 
-    boolean makeFolder(String path, String name){
+
+
+    boolean makeFolder(String path, String name) {
         try {
             client.makeFolder(path + name);
             return true;
@@ -130,7 +118,7 @@ public class DiskService {
     boolean deleteFile(String name){
         try {
             ResourcesArgs resourcesArgs = new ResourcesArgs.Builder()
-                    .setMediaType("audio,video,image")
+                    .setMediaType("xml")
                     .setLimit(50)
                     .setOffset(0)
                     .build();

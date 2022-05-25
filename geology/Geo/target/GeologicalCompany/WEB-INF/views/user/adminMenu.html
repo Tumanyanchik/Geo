@@ -4,46 +4,37 @@
 
 <head>
     <meta charset="UTF-8">
-<!--    <script language="JavaScript">
-        if (document.referrer !== 'http://localhost:8080/user/login') {
-            window.location = "http://localhost:8080/user/login";
-        }
-    </script>-->
+    <!--    <script language="JavaScript">
+            if (document.referrer !== 'http://localhost:8080/user/login') {
+                window.location = "http://localhost:8080/user/login";
+            }
+        </script>-->
 
     <script src="https://api-maps.yandex.ru/2.1/?apikey=21617701-025d-4832-9e0b-ca48ac51d1ce&lang=ru_RU"
             type="text/javascript">
     </script>
 
-    <script type="text/javascript">
+
+    <script type="text/javascript" th:inline="javascript">
         ymaps.ready(init);
-        var placemarks = [
-                {
-                    latitude: 55.68,
-                    logitude: 37.73,
-                    balloonContent: 'Здесь буду координаты и кнопка загрузки'
-                },
-                {
-                    latitude: 55.64,
-                    logitude: 37.71,
-                    balloonContent: 'Здесь буду координаты и кнопка загрузки'
-                },
-                {
-                    latitude: 55.64,
-                    logitude: 37.60,
-                    balloonContent: 'Здесь буду координаты и кнопка загрузки'
-                }
-            ],
+        var list = [[${fileList}]];
             geoObjects = [];
 
         function init() {
             var myMap = new ymaps.Map("map", {
-                center: [55.76, 37.64],
+                center: [52.72, 41.45],
                 zoom: 10
             });
 
-            for (var i = 0; i < placemarks.length; i++) {
-                geoObjects[i] = new ymaps.Placemark([placemarks[i].latitude, placemarks[i].logitude], {
-                    balloonContent: 'Здесь буду координаты и кнопка загрузки'
+            for (var i = 0; i < list.length; i++) {
+                geoObjects[i] = new ymaps.Placemark([parseFloat(list[i].latitude), parseFloat(list[i].longitude)], {
+                    balloonContent: '№ отчета: '+list[i].id_contract +
+                        '<form th:method="post" th:action="@{/user/downloadSFile}"th:object="${file}">' +
+                        ' <input id="id_file_d" type="hidden" name="id_file" th:value="*{id_file}"> ' +
+                        '<div> ' +
+                        '<input id="accept_d" type="submit" value="Скачать"/> ' +
+                        '</div>' +
+                        ' </form>'
                 }, {
                     // Опции.
                     // Необходимо указать данный тип макета.
@@ -65,19 +56,16 @@
         }
 
     </script>
-
-
-
 </head>
 
 <body>
-<div id="menuPanel" >
-    <a id ="switch" href="http://localhost:8080/user/login">Выход</a>
-    <a id ="switch2" href="http://localhost:8080/user/registration">Зарегестрировать</a>
+<div id="menuPanel">
+    <a id="switch" href="http://localhost:8080/user/login">Выход</a>
+    <a id="switch2" href="http://localhost:8080/user/registration">Зарегистрировать</a>
 </div>
-    <div id="map" style="width: 1100px; height: 800px;"></div>
-    <div id="tableDiv">
-    <table id = "table" >
+<div id="map" style="width: 1100px; height: 800px;"></div>
+<div id="tableDiv">
+    <table id="table">
         <caption>Ожидают проверки</caption>
         <tr>
             <th>№</th>
@@ -88,40 +76,45 @@
 
         <tr th:each="file, state : ${processingList}">
             <td th:utext="${state.count}">№</td>
-            <td >
-                <a th:href="${file.getfLink()}">Загрузить</a>
+            <td>
+                <form th:method="post" th:action="@{/user/downloadFile}" th:object="${file}">
+                    <input id="id_file_d" type="hidden" name="id_file" th:value="*{id_file}"/>
+                    <div>
+                        <input id="accept_d" type="submit" value="Скачать"/>
+                    </div>
+                </form>
             </td>
             <td th:utext="${file.getEmployeeName()}">Сотрудник</td>
             <td>
-                <form th:method="post" th:action="@{/user/acceptFile}" th:object="${file}" >
-                    <input id="id_file" type="hidden"  name = "id_file" th:value="*{id_file}"/>
-                    <input id="status" type="hidden"  name = "status" th:value="Принят"/>
-                <div >
-                    <input id="accept" type="submit" value="Принять"/>
-                </div>
+                <form th:method="post" th:action="@{/user/acceptFile}" th:object="${file}">
+                    <input id="id_file" type="hidden" name="id_file" th:value="*{id_file}"/>
+                    <input id="status" type="hidden" name="status" th:value="Принят"/>
+                    <div>
+                        <input id="accept" type="submit" value="Принять"/>
+                    </div>
 
                 </form>
-                <form th:method="post" th:action="@{/user/acceptFile}" th:object="${file}" >
-                    <input id="id_file_r" type="hidden"  name = "id_file" th:value="*{id_file}"/>
-                    <input id="status_r" type="hidden"  name = "status" th:value="|Не принят|"/>
-                <div >
-                    <input id = "reject" type="submit" value="Отклонить"/>
-                </div>
+                <form th:method="post" th:action="@{/user/acceptFile}" th:object="${file}">
+                    <input id="id_file_r" type="hidden" name="id_file" th:value="*{id_file}"/>
+                    <input id="status_r" type="hidden" name="status" th:value="|Не принят|"/>
+                    <div>
+                        <input id="reject" type="submit" value="Отклонить"/>
+                    </div>
                 </form>
             </td>
         </tr>
-        </table>
-    </div>
+    </table>
+</div>
 </body>
 
 
 <style type="text/css">
-    body{
+    body {
         background: #DCDDDF url(https://cssdeck.com/uploads/media/items/7/7AF2Qzt.png);
     }
 
-    #menuPanel{
-        border-bottom: 2px solid #c4c6ca; ;
+    #menuPanel {
+        border-bottom: 2px solid #c4c6ca;;
         background: lightslategray;
         border-bottom-left-radius: 30px;
         border-bottom-right-radius: 30px;
@@ -136,8 +129,9 @@
         line-height: 20px;
         margin: 20px 20px 20px 20px;
     }
+
     #switch2 {
-        block:flex;
+        block: flex;
         color: black;
         float: right;
         font: bold 25px Helvetica, Arial, sans-serif;
@@ -154,28 +148,32 @@
         border-radius: 30px;
         border: 1px solid #D69E31;
     }
-    #tableDiv{
+
+    #tableDiv {
         float: right;
         display: block;
         margin-top: 20px;
         margin-right: 40px;
     }
-    #table{
+
+    #table {
         width: 700px;
         border-collapse: collapse;
         border: 2px solid #c4c6ca;
         font: 13px Helvetica, Arial, sans-serif;
         background: #eae7e7;
     }
+
     th, td {
         padding: 10px 15px;
         border: 1px solid #c4c6ca;
         text-align: center;
         align-content: center;
-        font:bold 13px Helvetica, Arial, sans-serif;
+        font: bold 13px Helvetica, Arial, sans-serif;
         color: #7E7E7E;
     }
-    th{
+
+    th {
         color: #7E7E7E;
     }
 
@@ -186,25 +184,26 @@
         color: #7E7E7E;
         font: bold 16px Helvetica, Arial, sans-serif;
     }
-    #accept{
+
+    #accept {
         display: inline;
-        background: rgb(254,231,154);
-        background: -moz-linear-gradient(top,  rgba(254,231,154,1) 0%, rgba(254,193,81,1) 100%);
-        background: -webkit-linear-gradient(top,  rgba(254,231,154,1) 0%,rgba(254,193,81,1) 100%);
-        background: -o-linear-gradient(top,  rgba(254,231,154,1) 0%,rgba(254,193,81,1) 100%);
-        background: -ms-linear-gradient(top,  rgba(254,231,154,1) 0%,rgba(254,193,81,1) 100%);
-        background: linear-gradient(top,  rgba(254,231,154,1) 0%,rgba(254,193,81,1) 100%);
-        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fee79a', endColorstr='#fec151',GradientType=0 );
+        background: rgb(254, 231, 154);
+        background: -moz-linear-gradient(top, rgba(254, 231, 154, 1) 0%, rgba(254, 193, 81, 1) 100%);
+        background: -webkit-linear-gradient(top, rgba(254, 231, 154, 1) 0%, rgba(254, 193, 81, 1) 100%);
+        background: -o-linear-gradient(top, rgba(254, 231, 154, 1) 0%, rgba(254, 193, 81, 1) 100%);
+        background: -ms-linear-gradient(top, rgba(254, 231, 154, 1) 0%, rgba(254, 193, 81, 1) 100%);
+        background: linear-gradient(top, rgba(254, 231, 154, 1) 0%, rgba(254, 193, 81, 1) 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fee79a', endColorstr='#fec151', GradientType=0);
         -webkit-border-radius: 30px;
         -moz-border-radius: 30px;
         -ms-border-radius: 30px;
         -o-border-radius: 30px;
         border-radius: 30px;
-        -webkit-box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
-        -moz-box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
-        -ms-box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
-        -o-box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
-        box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
+        -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+        -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+        -ms-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+        -o-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
         border: 1px solid #D69E31;
         color: #85592e;
         cursor: pointer;
@@ -213,38 +212,39 @@
         height: 35px;
         margin: 10px 0 15px 15px;
         position: relative;
-        text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
         width: 120px;
     }
+
     #accept:hover {
-        background: rgb(254,193,81);
-        background: -moz-linear-gradient(top,  rgba(254,193,81,1) 0%, rgba(254,231,154,1) 100%);
-        background: -webkit-linear-gradient(top,  rgba(254,193,81,1) 0%,rgba(254,231,154,1) 100%);
-        background: -o-linear-gradient(top,  rgba(254,193,81,1) 0%,rgba(254,231,154,1) 100%);
-        background: -ms-linear-gradient(top,  rgba(254,193,81,1) 0%,rgba(254,231,154,1) 100%);
-        background: linear-gradient(top,  rgba(254,193,81,1) 0%,rgba(254,231,154,1) 100%);
-        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fec151', endColorstr='#fee79a',GradientType=0 );
+        background: rgb(254, 193, 81);
+        background: -moz-linear-gradient(top, rgba(254, 193, 81, 1) 0%, rgba(254, 231, 154, 1) 100%);
+        background: -webkit-linear-gradient(top, rgba(254, 193, 81, 1) 0%, rgba(254, 231, 154, 1) 100%);
+        background: -o-linear-gradient(top, rgba(254, 193, 81, 1) 0%, rgba(254, 231, 154, 1) 100%);
+        background: -ms-linear-gradient(top, rgba(254, 193, 81, 1) 0%, rgba(254, 231, 154, 1) 100%);
+        background: linear-gradient(top, rgba(254, 193, 81, 1) 0%, rgba(254, 231, 154, 1) 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fec151', endColorstr='#fee79a', GradientType=0);
     }
 
-    #reject{
+    #reject {
         display: inline;
-        background: rgb(254,231,154);
-        background: -moz-linear-gradient(top,  rgba(254,231,154,1) 0%, rgba(254,193,81,1) 100%);
-        background: -webkit-linear-gradient(top,  rgba(254,231,154,1) 0%,rgba(254,193,81,1) 100%);
-        background: -o-linear-gradient(top,  rgba(254,231,154,1) 0%,rgba(254,193,81,1) 100%);
-        background: -ms-linear-gradient(top,  rgba(254,231,154,1) 0%,rgba(254,193,81,1) 100%);
-        background: linear-gradient(top,  rgba(254,231,154,1) 0%,rgba(254,193,81,1) 100%);
-        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fee79a', endColorstr='#fec151',GradientType=0 );
+        background: rgb(254, 231, 154);
+        background: -moz-linear-gradient(top, rgba(254, 231, 154, 1) 0%, rgba(254, 193, 81, 1) 100%);
+        background: -webkit-linear-gradient(top, rgba(254, 231, 154, 1) 0%, rgba(254, 193, 81, 1) 100%);
+        background: -o-linear-gradient(top, rgba(254, 231, 154, 1) 0%, rgba(254, 193, 81, 1) 100%);
+        background: -ms-linear-gradient(top, rgba(254, 231, 154, 1) 0%, rgba(254, 193, 81, 1) 100%);
+        background: linear-gradient(top, rgba(254, 231, 154, 1) 0%, rgba(254, 193, 81, 1) 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fee79a', endColorstr='#fec151', GradientType=0);
         -webkit-border-radius: 30px;
         -moz-border-radius: 30px;
         -ms-border-radius: 30px;
         -o-border-radius: 30px;
         border-radius: 30px;
-        -webkit-box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
-        -moz-box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
-        -ms-box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
-        -o-box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
-        box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
+        -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+        -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+        -ms-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+        -o-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
         border: 1px solid #D69E31;
         color: #85592e;
         cursor: pointer;
@@ -253,18 +253,59 @@
         height: 35px;
         margin: 10px 0 15px 15px;
         position: relative;
-        text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
         width: 120px;
     }
 
-    #reject:hover{
-        background: rgb(254,193,81);
-        background: -moz-linear-gradient(top,  rgba(254,193,81,1) 0%, rgba(254,231,154,1) 100%);
-        background: -webkit-linear-gradient(top,  rgba(254,193,81,1) 0%,rgba(254,231,154,1) 100%);
-        background: -o-linear-gradient(top,  rgba(254,193,81,1) 0%,rgba(254,231,154,1) 100%);
-        background: -ms-linear-gradient(top,  rgba(254,193,81,1) 0%,rgba(254,231,154,1) 100%);
-        background: linear-gradient(top,  rgba(254,193,81,1) 0%,rgba(254,231,154,1) 100%);
-        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fec151', endColorstr='#fee79a',GradientType=0 );
+    #reject:hover {
+        background: rgb(254, 193, 81);
+        background: -moz-linear-gradient(top, rgba(254, 193, 81, 1) 0%, rgba(254, 231, 154, 1) 100%);
+        background: -webkit-linear-gradient(top, rgba(254, 193, 81, 1) 0%, rgba(254, 231, 154, 1) 100%);
+        background: -o-linear-gradient(top, rgba(254, 193, 81, 1) 0%, rgba(254, 231, 154, 1) 100%);
+        background: -ms-linear-gradient(top, rgba(254, 193, 81, 1) 0%, rgba(254, 231, 154, 1) 100%);
+        background: linear-gradient(top, rgba(254, 193, 81, 1) 0%, rgba(254, 231, 154, 1) 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fec151', endColorstr='#fee79a', GradientType=0);
+    }
+
+    #accept_d {
+        display: inline;
+        background: rgb(254, 231, 154);
+        background: -moz-linear-gradient(top, rgba(254, 231, 154, 1) 0%, rgba(254, 193, 81, 1) 100%);
+        background: -webkit-linear-gradient(top, rgba(254, 231, 154, 1) 0%, rgba(254, 193, 81, 1) 100%);
+        background: -o-linear-gradient(top, rgba(254, 231, 154, 1) 0%, rgba(254, 193, 81, 1) 100%);
+        background: -ms-linear-gradient(top, rgba(254, 231, 154, 1) 0%, rgba(254, 193, 81, 1) 100%);
+        background: linear-gradient(top, rgba(254, 231, 154, 1) 0%, rgba(254, 193, 81, 1) 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fee79a', endColorstr='#fec151', GradientType=0);
+        -webkit-border-radius: 30px;
+        -moz-border-radius: 30px;
+        -ms-border-radius: 30px;
+        -o-border-radius: 30px;
+        border-radius: 30px;
+        -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+        -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+        -ms-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+        -o-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+        border: 1px solid #D69E31;
+        color: #85592e;
+        cursor: pointer;
+        float: none;
+        font: bold 15px Helvetica, Arial, sans-serif;
+        height: 35px;
+        margin: 10px 0 15px 15px;
+        position: relative;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+        width: 120px;
+    }
+
+    #accept_d:hover {
+        background: rgb(254, 193, 81);
+        background: -moz-linear-gradient(top, rgba(254, 193, 81, 1) 0%, rgba(254, 231, 154, 1) 100%);
+        background: -webkit-linear-gradient(top, rgba(254, 193, 81, 1) 0%, rgba(254, 231, 154, 1) 100%);
+        background: -o-linear-gradient(top, rgba(254, 193, 81, 1) 0%, rgba(254, 231, 154, 1) 100%);
+        background: -ms-linear-gradient(top, rgba(254, 193, 81, 1) 0%, rgba(254, 231, 154, 1) 100%);
+        background: linear-gradient(top, rgba(254, 193, 81, 1) 0%, rgba(254, 231, 154, 1) 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fec151', endColorstr='#fee79a', GradientType=0);
     }
 
 

@@ -11,7 +11,7 @@ public class File {
     private String latitude;
     @Size(min=4,max=30,message = "Поле Сотрудник должно содержать от 4 до 30 символов")
     private String employeeName;
-    @Size(min=4,max=30,message = "Поле Заказчие должно содержать от 4 до 30 символов")
+    @Size(min=4,max=30,message = "Поле Заказчик должно содержать от 4 до 30 символов")
     private String customerName;
     private String fLink;
     private String status;

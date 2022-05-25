@@ -23,13 +23,13 @@ import java.util.stream.Collectors;
 @RequestMapping("/user")
 public class UsersController {
 
-    private final String TOKEN = "AQAAAAAT3cmsAADLW6DgBVJwJ0e_rnH9sVXL5hM";
+    private final DiskService diskService;
     private final UserService userService;
 
 
     @Autowired
-    public UsersController(UserService userService, DiskService diskService){
-        this.diskS
+    public UsersController(UserService userService,DiskService diskService){
+        this.diskService = diskService;
         this.userService =userService;
     }
 
@@ -59,7 +59,7 @@ public class UsersController {
     @GetMapping("/employeeMenu")
     public String employeeMenu(Model model){
         User user = (User) model.getAttribute("user");
-        model.addAttribute("processingList", userService.showProcessingFiles());
+        model.addAttribute("processingList", userService.showProcessingRejectFiles());
         model.addAttribute("file",new File());
         return "user/employeeMenu";
     }
@@ -82,10 +82,30 @@ public class UsersController {
         return "redirect:/user/employeeMenu";
     }
 
+
+
     @PostMapping("/acceptFile")
     public String acceptFile(Model model,@ModelAttribute("file") File file){
         userService.updateStatus(file);
         return "redirect:/user/adminMenu";
+    }
+
+    @PostMapping("/downloadSFile")
+    public String downloadFile(Model model,@ModelAttribute("file") File file){
+        userService.downloadSFile(file);
+        return "redirect:/user/adminMenu";
+    }
+
+    @PostMapping("/downloadFile")
+    public String downloadProccessedFile(Model model,@ModelAttribute("file") File file){
+        userService.downloadProccessedFile(file);
+        return "redirect:/user/adminMenu";
+    }
+
+    @PostMapping("/downloadRejectFile")
+    public String downloadProccessedRejectFile(Model model,@ModelAttribute("file") File file){
+        userService.downloadProcessingRejectFile(file);
+        return "redirect:/user/employeeMenu";
     }
 
 
@@ -137,6 +157,8 @@ public class UsersController {
             return "/user/login";
         }
 
+        userService.setActiveUser(user);
+
         String role = user.getRole().getRoleName();
         if (role.equals("Администратор"))
             return "redirect:/user/adminMenu";
@@ -149,12 +171,7 @@ public class UsersController {
         return "redirect:/user/registration";
     }
 
-    //Загрузать файл на диск
-    @PutMapping("/diskUp")
-    public String diskUp(){
-        String  blob = "";
-        return blob;
-    }
+
 
 
 }

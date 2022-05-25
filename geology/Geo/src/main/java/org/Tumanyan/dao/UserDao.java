@@ -70,17 +70,17 @@ public class UserDao {
     }
 
     //Получение файлов в статусе "Принят"
-    public List<File> showAcceptFiles(){
-        List<File>  fileList = new ArrayList<>();
+    public List<File> showAcceptFiles() {
+        List<File> fileList = new ArrayList<>();
 
         try {
             openConnection();
             Statement statement = connection.createStatement();
-            String SQL = "SELECT ID_FILE,c.ID_CONTRACT,STATUS,f.ID_EMPLOYEE,FIO,LATITUDE,LONGITUDE,FLINK,c.YEAR FROM FILES f JOIN CONTRACT c "+
+            String SQL = "SELECT ID_FILE,c.ID_CONTRACT,STATUS,f.ID_EMPLOYEE,FIO,LATITUDE,LONGITUDE,FLINK,c.YEAR FROM FILES f JOIN CONTRACT c " +
                     "ON f.id_contract=c.id_contract JOIN EMPLOYEE e ON f.id_employee =e.id_employee WHERE STATUS = 'Принят'";
-            ResultSet resultSet =statement.executeQuery(SQL);
+            ResultSet resultSet = statement.executeQuery(SQL);
 
-            while(resultSet.next()){
+            while (resultSet.next()) {
                 File file = new File();
                 file.setId_file(resultSet.getInt("ID_FILE"));
                 file.setId_contract(resultSet.getInt("ID_CONTRACT"));
@@ -92,24 +92,25 @@ public class UserDao {
                 file.setYear(resultSet.getInt("YEAR"));
                 fileList.add(file);
             }
-        }catch (SQLException ex){
+        } catch (SQLException ex) {
             ex.printStackTrace();
-        }finally {
+        } finally {
             closeConnection(connection);
         }
         return fileList;
     }
+
     //Получение файлов в статусе "Обрабатывается"
-    public List<File> showProcessingFiles(){
-        List<File>  fileList = new ArrayList<>();
+    public List<File> showProcessingFiles() {
+        List<File> fileList = new ArrayList<>();
         try {
             openConnection();
             Statement statement = connection.createStatement();
-            String SQL = "SELECT ID_FILE,f.ID_EMPLOYEE,FIO,FLINK,STATUS FROM FILES f JOIN CONTRACT c "+
+            String SQL = "SELECT ID_FILE,f.ID_EMPLOYEE,FIO,FLINK,STATUS FROM FILES f JOIN CONTRACT c " +
                     "ON f.id_contract=c.id_contract JOIN EMPLOYEE e ON f.id_employee =e.id_employee WHERE STATUS = 'Обрабатывается'";
-            ResultSet resultSet =statement.executeQuery(SQL);
+            ResultSet resultSet = statement.executeQuery(SQL);
 
-            while(resultSet.next()){
+            while (resultSet.next()) {
                 File file = new File();
                 file.setId_file(resultSet.getInt("ID_FILE"));
                 file.setId_employee(resultSet.getInt("ID_EMPLOYEE"));
@@ -118,16 +119,53 @@ public class UserDao {
                 file.setStatus(resultSet.getString("STATUS"));
                 fileList.add(file);
             }
-        }catch (SQLException ex){
+        } catch (SQLException ex) {
             ex.printStackTrace();
-        }finally {
+        } finally {
             closeConnection(connection);
         }
         return fileList;
     }
 
+
+    //Получение файлов в статусе "Обрабатывается" или "Не принят"
+    public List<File> showProcessingRejectFiles() {
+        List<File> fileList = new ArrayList<>();
+        try {
+            openConnection();
+            Statement statement = connection.createStatement();
+            String SQL = "" +
+                    "SELECT ID_FILE,f.ID_EMPLOYEE,FIO,FLINK,STATUS " +
+                    "FROM FILES f " +
+                    "   JOIN CONTRACT c " +
+                    "       ON f.id_contract=c.id_contract " +
+                    "   JOIN EMPLOYEE e" +
+                    "       ON f.id_employee =e.id_employee " +
+                    "WHERE (STATUS = 'Обрабатывается'" +
+                    "   OR STATUS = 'Не принят') " +
+                    "   AND e.ISACTIVE = 1";
+            ResultSet resultSet = statement.executeQuery(SQL);
+
+            while (resultSet.next()) {
+                File file = new File();
+                file.setId_file(resultSet.getInt("ID_FILE"));
+                file.setId_employee(resultSet.getInt("ID_EMPLOYEE"));
+                file.setEmployeeName(resultSet.getString("FIO"));
+                file.setfLink(resultSet.getString("FLINK"));
+                file.setStatus(resultSet.getString("STATUS"));
+                fileList.add(file);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            closeConnection(connection);
+        }
+        return fileList;
+    }
+
+
     //Обновление статуса файла
-    public void updateStatus(File file){
+    public void updateStatus(File file) {
         try {
             openConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE DEMO.FILES SET STATUS = ? WHERE ID_FILE = ?");
@@ -135,34 +173,34 @@ public class UserDao {
             preparedStatement.setInt(2, file.getId_file());
 
             preparedStatement.executeUpdate();
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
-        }finally {
+        } finally {
             closeConnection(connection);
         }
     }
 
     //Добавление файла в БД
-    public void uploadFile(File file){
-        try{
+    public void uploadFile(File file) {
+        try {
             openConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO CONTRACT (ID_CONTRACT,CUSTOMER,TITLEWORK,YEAR,LONGITUDE,LATITUDE) " +
                     "VALUES (?,?,?,?,?,?)");
-            preparedStatement.setInt(1,file.getId_contract());
-            preparedStatement.setString(2,file.getCustomerName());
-            preparedStatement.setString(3,file.getTitleWork());
-            preparedStatement.setInt(4,file.getYear());
-            preparedStatement.setString(5,file.getLongitude());
-            preparedStatement.setString(6,file.getLatitude());
+            preparedStatement.setInt(1, file.getId_contract());
+            preparedStatement.setString(2, file.getCustomerName());
+            preparedStatement.setString(3, file.getTitleWork());
+            preparedStatement.setInt(4, file.getYear());
+            preparedStatement.setString(5, file.getLongitude());
+            preparedStatement.setString(6, file.getLatitude());
             preparedStatement.executeUpdate();
 
             preparedStatement = connection.prepareStatement("INSERT INTO FILES (ID_CONTRACT,ID_TYPE,ID_FORMAT,STATUS) VALUES (?,1,1,'Обрабатывается')");
-            preparedStatement.setInt(1,file.getId_contract());
+            preparedStatement.setInt(1, file.getId_contract());
             preparedStatement.executeUpdate();
 
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
-        }finally {
+        } finally {
             closeConnection(connection);
         }
     }
@@ -190,11 +228,11 @@ public class UserDao {
     }
 
     // Проверка присутствия файла в БД
-    public boolean checkFileInDb(File file){
-        try{
+    public boolean checkFileInDb(File file) {
+        try {
             openConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT COUNT(*) from CONTRACT WHERE ID_CONTRACT = ?");
-            preparedStatement.setInt(1,file.getId_contract());
+            preparedStatement.setInt(1, file.getId_contract());
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
@@ -203,13 +241,31 @@ public class UserDao {
                 }
             }
 
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
-        }finally {
+        } finally {
             closeConnection(connection);
         }
 
         return false;
+    }
+
+    //Установка активного пользователя
+    public void setActiveUser(User user) {
+        try {
+            openConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE DEMO.EMPLOYEE Set ISACTIVE = " + 0);
+            preparedStatement.executeUpdate();
+            preparedStatement = connection.prepareStatement("UPDATE DEMO.EMPLOYEE Set ISACTIVE= " + 1 + " WHERE " +
+                    "LOGIN = ? AND ID_ROLE=(SELECT ID_ROLE FROM EMPLOYEES_ROLES WHERE NAME_ROLE = ?)");
+            preparedStatement.setString(1, user.getLogin());
+            preparedStatement.setString(2, user.getRole().getRoleName());
+            preparedStatement.executeUpdate();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            closeConnection(connection);
+        }
     }
 
     // Проверка присутствия пользователя в БД
@@ -223,6 +279,7 @@ public class UserDao {
             preparedStatement.setString(1, user.getLogin());
             preparedStatement.setString(2, user.getRole().getRoleName());
             ResultSet resultSet = preparedStatement.executeQuery();
+
 
             while (resultSet.next()) {
                 if (resultSet.getInt(1) == 1) {

@@ -5,16 +5,22 @@ import org.Tumanyan.entity.File;
 import org.Tumanyan.entity.Role;
 import org.Tumanyan.entity.User;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import javax.swing.*;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class UserService {
 
     private final UserDao userDao;
+    private final DiskService diskService;
 
-    UserService(UserDao userDao) {
+    UserService(UserDao userDao, DiskService diskService) {
+        this.diskService = diskService;
         this.userDao = userDao;
     }
 
@@ -28,7 +34,7 @@ public class UserService {
         return userDao.showAcceptFiles();
     }
 
-    //Получение файлов в статусе "Обрабатывается" или "Не принят"
+    //Получение файлов в статусе "Обрабатывается"
     public List<File> showProcessingFiles() {
         return userDao.showProcessingFiles();
     }
@@ -49,9 +55,10 @@ public class UserService {
     }
 
     // Проверка присутствия файла в БД
-    public boolean checkFileInDb(File file){
+    public boolean checkFileInDb(File file) {
         return userDao.checkFileInDb(file);
     }
+
     // Проверка присутствия пользователя в БД
     public boolean checkUserInDb(User user) {
         return userDao.checkUserInDb(user);
@@ -62,8 +69,49 @@ public class UserService {
         return userDao.checkPassword(user);
     }
 
+    public void setActiveUser(User user) {
+        userDao.setActiveUser(user);
+    }
+
+    //Получение файлов в статусе "Обрабатывается" или "Не принят"
+    public List<File> showProcessingRejectFiles() {
+        return userDao.showProcessingRejectFiles();
+    }
+
+    // Скачивание файла (Обрабатывающиеся)
+    public void downloadProccessedFile(File file) {
+        List<File> fileList = showProcessingFiles();
+        Optional<File> optionalFile = fileList.stream()
+                .filter(f -> f.getId_file() == file.getId_file())
+                .findFirst();
+        if (!optionalFile.isPresent())
+            return;
+        diskService.getFile("C:\\Users\\Artem\\downloads\\" + optionalFile.get().getId_file() + ".doc", optionalFile.get().getfLink());
+    }
+
+    public void downloadSFile(File file) {
+        List<File> fileList = showAcceptFiles();
+        Optional<File> optionalFile = fileList.stream()
+                .filter(f -> f.getId_file() == file.getId_file())
+                .findFirst();
+        if (!optionalFile.isPresent())
+            return;
+        diskService.getFile("C:\\Users\\Artem\\downloads\\" + optionalFile.get().getId_file() + ".doc", optionalFile.get().getfLink());
+    }
+
+    // Скачивание файла (Обрабатывающиеся и непринятые)
+    public void downloadProcessingRejectFile(File file) {
+        List<File> fileList = showProcessingRejectFiles();
+        Optional<File> optionalFile = fileList.stream()
+                .filter(f -> f.getId_file() == file.getId_file())
+                .findFirst();
+        if (!optionalFile.isPresent())
+            return;
+        diskService.getFile("C:\\Users\\Artem\\downloads\\" + optionalFile.get().getId_file() + ".doc", optionalFile.get().getfLink());
+    }
+
     //Выбор файла
-    public void chooseFile(){
+    public void chooseFile() {
         JFileChooser fileChooser = new JFileChooser();
         JFrame frame = new JFrame("Выбор");
         if (fileChooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
