@@ -43,7 +43,7 @@ public class DiskService {
         return new ArrayList<String>();
     }
 
-    boolean getFile(String name) {
+    public boolean getFile(String pathToDownload, String pathOnDisk) {
         try {
             File local = new File(pathToDownload);
             client.downloadFile(pathOnDisk, local, new ProgressListener() {
@@ -52,13 +52,12 @@ public class DiskService {
                     logger.info("updateProgress: " + loaded + " / " + total);
                 }
 
-                    @Override
-                    public boolean hasCancelled() {
-                        return false;
-                    }
-                });
-                return true;
-            }
+                @Override
+                public boolean hasCancelled() {
+                    return false;
+                }
+            });
+            return true;
         } catch (Exception ex) {
             logger.warn(ex.toString());
         }
@@ -115,7 +114,7 @@ public class DiskService {
         return false;
     }
 
-    boolean deleteFile(String name){
+    boolean deleteFile(String name) {
         try {
             ResourcesArgs resourcesArgs = new ResourcesArgs.Builder()
                     .setMediaType("xml")
