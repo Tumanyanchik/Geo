@@ -46,7 +46,12 @@ public class UserService {
 
     //Добавление файла в БД
     public void uploadFile(File file) {
-        userDao.uploadFile(file);
+        try {
+            file.setfLink(diskService.uploadFile(file.getfLink()));
+            userDao.uploadFile(file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //Занесение данных о созданном сотруднике в БД
@@ -110,13 +115,4 @@ public class UserService {
         diskService.getFile("C:\\Users\\Artem\\downloads\\" + optionalFile.get().getId_file() + ".doc", optionalFile.get().getfLink());
     }
 
-    //Выбор файла
-    public void chooseFile() {
-        JFileChooser fileChooser = new JFileChooser();
-        JFrame frame = new JFrame("Выбор");
-        if (fileChooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-            java.io.File file = fileChooser.getSelectedFile();
-            // save to file
-        }
-    }
 }

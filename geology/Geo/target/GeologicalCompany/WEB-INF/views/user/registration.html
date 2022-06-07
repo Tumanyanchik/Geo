@@ -2,15 +2,20 @@
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <!--    <script language="JavaScript">
+        <script language="JavaScript">
         if (document.referrer !== 'http://localhost:8080/user/adminMenu') {
             window.location = "http://localhost:8080/user/login";
         }
-    </script>-->
+    </script>
 </head>
 
 
 <body>
+<div id="menuPanel">
+    <a id="switch" href="http://localhost:8080/user/login">Выход</a>
+    <a id="switch2" href="http://localhost:8080/user/adminMenu">Назад</a>
+</div>
+
 <div class="container">
     <section id="content">
         <form th:method="post" th:action="@{/user/reg}" th:object="${user}">
@@ -55,6 +60,33 @@
 
 
 <style type="text/css">
+
+    #menuPanel {
+        border-bottom: 2px solid #c4c6ca;;
+        background: lightslategray;
+        border-bottom-left-radius: 30px;
+        border-bottom-right-radius: 30px;
+        height: 75px;
+    }
+    #switch {
+        color: black;
+        float: right;
+        font: bold 25px Helvetica, Arial, sans-serif;
+        letter-spacing: -0.05em;
+        line-height: 20px;
+        margin: 20px 20px 20px 20px;
+    }
+
+    #switch2 {
+        block: flex;
+        color: black;
+        float: right;
+        font: bold 25px Helvetica, Arial, sans-serif;
+        letter-spacing: -0.05em;
+        line-height: 20px;
+        margin: 20px 20px 20px 20px;
+    }
+
     body {
         background: #DCDDDF url(https://cssdeck.com/uploads/media/items/7/7AF2Qzt.png);
         color: #000;
@@ -79,6 +111,46 @@
     h4 {
         font-size: 16px;
     }
++
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     h5 {
         font-size: 14px;

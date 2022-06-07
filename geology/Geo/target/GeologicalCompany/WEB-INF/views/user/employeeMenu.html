@@ -2,8 +2,8 @@
 <html lang="en" xmlns:th="http://thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <!--    <script language="JavaScript">
+   <!-- <meta charset="UTF-8">
+        <script language="JavaScript">
             if (document.referrer !== 'http://localhost:8080/user/login') {
                 window.location = "http://localhost:8080/user/login";
             }
@@ -53,6 +53,7 @@
     <div>
         <label id="labIdRep">№ дела:</label>
         <span style="color: red" th:text="${messageErrorAvailabilityFile}">Error message availabilityFile</span>
+        <span style="color: red" th:text="${messageError}">Error message </span>
         <input type="text" id="id_contract" required="" th:field="*{id_contract}"/>
         <div style="color: red" th:if="${#fields.hasErrors('id_contract')}" th:errors="*{id_contract}">Contract error
         </div>
@@ -96,7 +97,7 @@
     </div>
 
     <div>
-        <input type="text" placeholder="Прикрепите файл" id="file"/>
+        <input type="text" placeholder="Прикрепите файл" id="file" th:field="*{fLink}"/>
     </div>
 
     <div>

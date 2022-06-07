@@ -64,13 +64,12 @@ public class UsersController {
         return "user/employeeMenu";
     }
 
+
     @PostMapping("/uploadFile")
     public String uploadFile(Model model,@ModelAttribute("file") @Valid File file, BindingResult bindingResult){
-
-        if (bindingResult.hasErrors()) {
-            System.out.println("ошибки в форме");
-            return "/user/employeeMenu";
-        }
+            if (bindingResult.hasErrors()) {
+                return "/user/employeeMenu";
+            }
 
         if( userService.checkFileInDb(file) == true){
             String messageErrorAvailabilityFile = "Файл c таким № дела уже существует";
@@ -91,7 +90,7 @@ public class UsersController {
     }
 
     @PostMapping("/downloadSFile")
-    public String downloadFile(Model model,@ModelAttribute("file") File file){
+    public String downloadSFile(Model model,@ModelAttribute("file") File file){
         userService.downloadSFile(file);
         return "redirect:/user/adminMenu";
     }

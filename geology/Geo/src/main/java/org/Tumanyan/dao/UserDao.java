@@ -83,7 +83,7 @@ public class UserDao {
             while (resultSet.next()) {
                 File file = new File();
                 file.setId_file(resultSet.getInt("ID_FILE"));
-                file.setId_contract(resultSet.getInt("ID_CONTRACT"));
+                file.setId_contract(Integer.toString(resultSet.getInt("ID_CONTRACT")));
                 file.setId_employee(resultSet.getInt("ID_EMPLOYEE"));
                 file.setEmployeeName(resultSet.getString("FIO"));
                 file.setLatitude(resultSet.getString("LATITUDE"));
@@ -194,8 +194,17 @@ public class UserDao {
             preparedStatement.setString(6, file.getLatitude());
             preparedStatement.executeUpdate();
 
-            preparedStatement = connection.prepareStatement("INSERT INTO FILES (ID_CONTRACT,ID_TYPE,ID_FORMAT,STATUS) VALUES (?,1,1,'Обрабатывается')");
+
+            preparedStatement = connection.prepareStatement("SELECT ID_EMPLOYEE FROM EMPLOYEE  WHERE ISACTIVE = 1");
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            resultSet.next();
+            int id = resultSet.getInt("ID_EMPLOYEE");
+
+            preparedStatement = connection.prepareStatement("INSERT INTO FILES (ID_CONTRACT,ID_TYPE,ID_FORMAT,STATUS,FLINK,ID_EMPLOYEE) VALUES (?,1,1,'Обрабатывается',?,?)");
             preparedStatement.setInt(1, file.getId_contract());
+            preparedStatement.setString(2, file.getfLink());
+            preparedStatement.setInt(3, id);
             preparedStatement.executeUpdate();
 
         } catch (Exception ex) {

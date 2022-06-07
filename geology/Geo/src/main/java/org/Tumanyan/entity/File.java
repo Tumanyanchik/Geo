@@ -1,5 +1,6 @@
 package org.Tumanyan.entity;
 
+import org.Tumanyan.Annotations.CheckInt;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.*;
@@ -23,8 +24,8 @@ public class File {
 
     private int id_file;
     @NotNull(message = "Поле №дела не должно быть пустым")
-    @Digits(message = "Поле №дела должно содержать от 4 до 10 символов", integer = 10, fraction = 0)
     @Positive(message = "Поле №дела должно быть положительным")
+    @Min(value = 999,message = "Поле №дела должно быть больше 999")
     @Max(value = 9999999,message = "Поле №дела должно быть меньше 9999999")
     private int id_contract;
     private int id_employee;
@@ -126,8 +127,13 @@ public class File {
         return id_contract;
     }
 
-    public void setId_contract(int id_contract) {
-        this.id_contract = id_contract;
+    public void setId_contract(String id_contract) {
+        try{
+            this.id_contract = Integer.parseInt(id_contract);
+       //     this.id_contract =id_contract;
+        }catch (Exception ex){
+
+        }
     }
 
     public int getYear() {

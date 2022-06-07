@@ -9,6 +9,7 @@ import com.yandex.disk.rest.json.Resource;
 import com.yandex.disk.rest.util.ResourcePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class DiskService {
     private static final Logger logger = LoggerFactory.getLogger(DiskService.class);
     private final RestClient client;
 
-    public DiskService(String user, String token){
+    public DiskService(String user, String token) {
         logger.info("Начало сеанса работы.");
         Credentials credentials = new Credentials(user, token);
         client = new RestClient(credentials);
@@ -46,6 +47,10 @@ public class DiskService {
     public boolean getFile(String pathToDownload, String pathOnDisk) {
         try {
             File local = new File(pathToDownload);
+            int i = 0;
+            while (local.exists()) {
+                local = new File(pathToDownload + "_delete" + ++i);
+            }
             client.downloadFile(pathOnDisk, local, new ProgressListener() {
                 @Override
                 public void updateProgress(long loaded, long total) {
@@ -65,16 +70,17 @@ public class DiskService {
     }
 
 
-    boolean uploadFile(String name, String serverPath, String localPath) {
-        File local = new File(localPath + name);
+    String uploadFile(String localPath) throws Exception {
+        File local = new File(localPath.replace("\"",""));
         Link link;
-        try {
-            link = client.getUploadLink(serverPath + name, true);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-        try {
+        String diskPath = "";
+
+            String[] buffName = localPath.split( "\\\\");
+            String name = buffName[buffName.length - 1].replace("\"","");
+            diskPath = "/Files/" + name;
+            link = client.getUploadLink(diskPath, true);
+
+
             ProgressListener myListener = new ProgressListener() {
                 boolean doCancel = false;
 
@@ -95,13 +101,9 @@ public class DiskService {
                 }
             };
             client.uploadFile(link, true, local, myListener);
-            return !myListener.hasCancelled();
-        } catch (Exception ex) {
-            logger.info("UploadingException: " + ex.getMessage());
-            return false;
-        }
-    }
+            return diskPath;
 
+    }
 
 
     boolean makeFolder(String path, String name) {

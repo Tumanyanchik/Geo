@@ -4,11 +4,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <!--    <script language="JavaScript">
-            if (document.referrer !== 'http://localhost:8080/user/login') {
+<!--    <script language="JavaScript">
+        if (document.referrer !== 'http://localhost:8080/user/login') {
+            if (document.referrer !== 'http://localhost:8080/user/registration')
                 window.location = "http://localhost:8080/user/login";
-            }
-        </script>-->
+        }
+    </script>-->
 
     <script src="https://api-maps.yandex.ru/2.1/?apikey=21617701-025d-4832-9e0b-ca48ac51d1ce&lang=ru_RU"
             type="text/javascript">
@@ -18,7 +19,7 @@
     <script type="text/javascript" th:inline="javascript">
         ymaps.ready(init);
         var list = [[${fileList}]];
-            geoObjects = [];
+        geoObjects = [];
 
         function init() {
             var myMap = new ymaps.Map("map", {
@@ -28,13 +29,13 @@
 
             for (var i = 0; i < list.length; i++) {
                 geoObjects[i] = new ymaps.Placemark([parseFloat(list[i].latitude), parseFloat(list[i].longitude)], {
-                    balloonContent: '№ отчета: '+list[i].id_contract +
-                        '<form th:method="post" th:action="@{/user/downloadSFile}"th:object="${file}">' +
-                        ' <input id="id_file_d" type="hidden" name="id_file" th:value="*{id_file}"> ' +
+                    balloonContent: '№ отчета: ' + list[i].id_contract +
+                        '<form method="post" action="downloadSFile">' +
+                        ' <input id="id_file_d" type="hidden" name="id_file" value=' + list[i].id_file + '>' +
                         '<div> ' +
                         '<input id="accept_d" type="submit" value="Скачать"/> ' +
                         '</div>' +
-                        ' </form>'
+                        '</form>'
                 }, {
                     // Опции.
                     // Необходимо указать данный тип макета.
@@ -54,6 +55,7 @@
             myMap.geoObjects.add(clusterer);
             clusterer.add(geoObjects);
         }
+
 
     </script>
 </head>
